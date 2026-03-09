@@ -12,6 +12,7 @@ const ListingSchema = new mongoose.Schema({
   rentalPricePerDay: { type: Number, required: true },
   securityDeposit: { type: Number, required: true },
   imageUrl: { type: String, default: '' },
+  imageData: { type: String, default: '' },
   available: { type: Boolean, default: true },
   availableFrom: { type: String },
   availableUntil: { type: String },

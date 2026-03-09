@@ -13,19 +13,32 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const existing = await User.findOne({ email: email.toLowerCase() })
-    if (existing) {
+    const lowerEmail = email.toLowerCase()
+    const existing = await User.findOne({ email: lowerEmail })
+    
+    if (existing && existing.isVerified) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 400 })
     }
 
     const hashed = await bcrypt.hash(password, 12)
-    const user = await User.create({ name, email: email.toLowerCase(), password: hashed, phone: phone || '' })
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
 
-    const token = signToken({ userId: user._id.toString(), email: user.email, name: user.name })
+    if (existing && !existing.isVerified) {
+      existing.name = name
+      existing.password = hashed
+      existing.phone = phone || existing.phone
+      existing.otp = otp
+      existing.otpExpiry = otpExpiry
+      await existing.save()
+    } else {
+      await User.create({ name, email: lowerEmail, password: hashed, phone: phone || '', isVerified: false, otp, otpExpiry })
+    }
 
-    const response = NextResponse.json({ success: true, name: user.name, email: user.email }, { status: 201 })
-    response.cookies.set('token', token, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 7 * 24 * 3600 })
-    return response
+    const { sendOTP } = await import('@/lib/email')
+    await sendOTP(lowerEmail, otp)
+
+    return NextResponse.json({ requireOtp: true, message: 'OTP sent to email', email: lowerEmail }, { status: 201 })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

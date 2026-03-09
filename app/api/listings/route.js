@@ -47,6 +47,12 @@ export async function POST(request) {
 
     await connectDB()
     const data = await request.json()
+
+    // Validate image size (rough check for base64)
+    if (data.imageData && data.imageData.length > 3 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Image too large. Please use an image under 2MB.' }, { status: 400 })
+    }
+
     const listing = await Listing.create({
       ...data,
       ownerId: decoded.userId,

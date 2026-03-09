@@ -8,18 +8,25 @@ export async function POST(request) {
   try {
     await connectDB()
     const { email, password } = await request.json()
+    const lowerEmail = email.toLowerCase()
 
-    const user = await User.findOne({ email: email.toLowerCase() })
+    const user = await User.findOne({ email: lowerEmail })
     if (!user) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
 
     const valid = await bcrypt.compare(password, user.password)
     if (!valid) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
 
-    const token = signToken({ userId: user._id.toString(), email: user.email, name: user.name })
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
 
-    const response = NextResponse.json({ success: true, name: user.name, email: user.email })
-    response.cookies.set('token', token, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 7 * 24 * 3600 })
-    return response
+    user.otp = otp
+    user.otpExpiry = otpExpiry
+    await user.save()
+
+    const { sendOTP } = await import('@/lib/email')
+    await sendOTP(lowerEmail, otp)
+
+    return NextResponse.json({ requireOtp: true, message: 'OTP sent to email', email: lowerEmail })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

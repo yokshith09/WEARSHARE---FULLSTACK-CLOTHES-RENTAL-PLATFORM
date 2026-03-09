@@ -8,7 +8,10 @@ const UserSchema = new mongoose.Schema({
   address: { type: String, default: '' },
   rating: { type: Number, default: 0 },
   totalReviews: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  isVerified: { type: Boolean, default: false },
+  otp: { type: String },
+  otpExpiry: { type: Date }
 })
 
 export default mongoose.models.User || mongoose.model('User', UserSchema)

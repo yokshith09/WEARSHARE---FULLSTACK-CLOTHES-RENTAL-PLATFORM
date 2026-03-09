@@ -1,111 +1,34 @@
-# 🚀 WearShare - Deploy in 15 Minutes
+# 🚀 How to Update Your App on Vercel
 
-## What You're Getting
-A live peer-to-peer clothing rental app with:
-- User registration & login
-- Browse & rent items
-- **Razorpay payment integration** (real INR payments!)
-- Dashboard to manage rentals
-- List your own items
+You're ready to make your new App overhaul live! Here is the step-by-step guide:
 
----
+## 1. Push Your Code to GitHub
+Open a terminal in VS Code (or your current terminal app) and run the following commands one by one to push all the new changes (including the new Advanced AI Try-On and OTP Auth):
 
-## Step 1: Get Free Services (5 min)
-
-### MongoDB Atlas (Database - Free)
-1. Go to https://cloud.mongodb.com
-2. Sign up free → Create Organization → Create Project → Build a Cluster (M0 Free)
-3. Database Access → Add DB User (username/password) → note them
-4. Network Access → Add IP Address → Allow Access from Anywhere (0.0.0.0/0)
-5. Click "Connect" on your cluster → Drivers → Copy the connection string
-   - Looks like: `mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority`
-   - Replace `<password>` with your actual password
-   - Add database name: `mongodb+srv://username:password@cluster.mongodb.net/wearshare?retryWrites=true`
-
-### Razorpay (Payments - Free Test Mode)
-1. Go to https://razorpay.com → Sign Up free
-2. Dashboard → Settings → API Keys → Generate Test Key
-3. Copy: **Key ID** (starts with `rzp_test_`) and **Key Secret**
-4. ⚠️ Test mode is free - no real money charged during testing!
-
----
-
-## Step 2: Deploy to Vercel (5 min)
-
-### Option A: Deploy via GitHub (Recommended)
-1. Create account at https://github.com and https://vercel.com
-2. Upload this project folder to GitHub (drag & drop at github.com/new)
-3. In Vercel: New Project → Import from GitHub → Select your repo
-4. Add Environment Variables (see Step 3)
-5. Click Deploy!
-
-### Option B: Deploy via Vercel CLI
 ```bash
-npm install -g vercel
-cd wearshare
-vercel --prod
+git add .
+git commit -m "feat: complete UI overhaul, AI Try-On, and OTP Auth"
+git push origin main
 ```
+*(If your branch is named `master` instead of `main`, use `git push origin master`)*
 
----
+## 2. Update Vercel Environment Variables
+Because we added some new secrets, you MUST add them to your Vercel project before the AI and Emails will work in production!
 
-## Step 3: Set Environment Variables in Vercel
+1. Go to your [Vercel Dashboard](https://vercel.com/dashboard) and click on the **WearShare** project.
+2. Click on the **Settings** tab.
+3. On the left side, click **Environment Variables**.
+4. Add the following keys and values exactly as they are in your local `.env.local` file:
 
-In Vercel Dashboard → Your Project → Settings → Environment Variables, add:
+**Required New Variables to Add:**
+- `REPLICATE_API_TOKEN` = `r8_ZAbm1Vv5abETH0laUNML...` (The API key you just got)
+- `JWT_SECRET` = (Copy the long string from your local .env.local)
+- `RAZORPAY_KEY_ID` = (Copy from your local .env.local)
+- `RAZORPAY_KEY_SECRET` = (Copy from your local .env.local)
 
-| Variable | Value |
-|----------|-------|
-| `MONGODB_URI` | `mongodb+srv://user:pass@cluster.mongodb.net/wearshare?retryWrites=true` |
-| `JWT_SECRET` | Any random string e.g. `wearshare-super-secret-key-2024` |
-| `RAZORPAY_KEY_ID` | `rzp_test_XXXXXXXXXXXXXX` |
-| `RAZORPAY_KEY_SECRET` | Your Razorpay secret key |
+*(If you also set up Email provider keys like `EMAIL_USER` or `EMAIL_PASS`, add those here too!)*
 
-Click "Save" then redeploy.
+## 3. Wait for the Build
+Because Vercel is linked to your GitHub repository, the moment you run `git push origin main`, Vercel will automatically start building the new version of your site.
 
----
-
-## Step 4: Seed Demo Data
-
-After deployment, visit:
-```
-https://your-app.vercel.app/api/seed
-```
-
-This creates 10 demo clothing listings so your friends can start browsing immediately!
-
----
-
-## Step 5: Share with Friends! 🎉
-
-Your app is live at: `https://your-app.vercel.app`
-
-### Test Payment
-Use Razorpay test card:
-- Card: `4111 1111 1111 1111`
-- Expiry: Any future date
-- CVV: Any 3 digits
-- OTP: `1234`
-
----
-
-## Going Live with Real Payments
-
-1. Complete Razorpay KYC (business verification)
-2. Replace test keys with live keys in Vercel environment variables
-3. That's it! Real INR payments start flowing 💰
-
----
-
-## Sharing the Platform
-
-Share the link with:
-- WhatsApp: "Hey! Rent premium clothes on WearShare: https://your-app.vercel.app"
-- Instagram: Post about it with the link
-- Community groups: Post the link and explain how to register
-
----
-
-## Support
-
-- MongoDB Docs: https://docs.atlas.mongodb.com
-- Razorpay Docs: https://razorpay.com/docs
-- Vercel Docs: https://vercel.com/docs
+You can watch it build in the "Deployments" tab. Once it turns Green ✅, your new advanced app will be live at `https://wearshare-six.vercel.app`!
