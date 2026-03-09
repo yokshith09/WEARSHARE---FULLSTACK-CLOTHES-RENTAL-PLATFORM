@@ -19,30 +19,27 @@ export async function POST(req) {
     }
 
     console.log('[AI Try-On] Starting Replicate prediction...');
-    
-    // Using the popular OOTDiffusion model on Replicate
-    // Model ID: viktorfa/oot_diffusion
+
+    // Using the IDM-VTON model on Replicate
+    // Model ID: cuuupid/idm-vton
     const output = await replicate.run(
-      "viktorfa/oot_diffusion:9f8fa4956970dde996aec86bbafbfbb9ec19d19a2e612948408a2fc2065842c6",
+      "cuuupid/idm-vton:0513734a452173b8173e907e3a59d19a36266e55b48528559432bd21c7d7e985",
       {
         input: {
-          vton_img: personImage,
           garm_img: garmentImage,
-          category: category,
-          n_samples: 1,
-          n_steps: 20,
-          image_scale: 2,
-          seed: -1
+          human_img: personImage,
+          garment_des: "clothing",
+          custom_clothing: false
         }
       }
     );
 
     console.log('[AI Try-On] Prediction successful');
-    
+
     // Output is generally an array of image URLs [ "https://replicate.delivery/..." ]
-    return NextResponse.json({ 
-      success: true, 
-      resultImage: Array.isArray(output) ? output[0] : output 
+    return NextResponse.json({
+      success: true,
+      resultImage: Array.isArray(output) ? output[0] : output
     });
 
   } catch (error) {
